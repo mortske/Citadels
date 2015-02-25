@@ -15,6 +15,7 @@ public class GameGUIHandler : MonoBehaviour
     public GameObject characterSelectionUI;
     public GameObject ActionSelection;
     public GameObject cardSelection;
+    public GameObject turnSelection;
     public Text text_deckAmnt;
     public Text text_king;
     public Text text_turn;
@@ -22,10 +23,13 @@ public class GameGUIHandler : MonoBehaviour
     public Text text_curChar;
     public Button[] characterButtons;
     public Button[] cardsSelections;
+    public Button[] turnButtons;
     public GameObject cardPrefab;
+    public CardVisual[] districtCards;
 
     List<CardVisual> allCards;
-
+    public CardVisual selectedCard { get; private set; }
+    
     void Start()
     {
         allCards = new List<CardVisual>();
@@ -81,6 +85,26 @@ public class GameGUIHandler : MonoBehaviour
     }
 
     public void RemoveCard(Card card)
+    {
+        for (int i = 0; i < allCards.Count; i++)
+        {
+            if (card.id == allCards[i].card.id)
+            {
+                Destroy(allCards[i].gameObject);
+                allCards.RemoveAt(i);
+            }
+        }
+    }
+
+    public void AddDistrict(Card card, int pos)
+    {
+        districtCards[pos].card = card;
+        districtCards[pos].text_Name.text = card.name;
+        districtCards[pos].text_Cost.text = card.cost.ToString();
+        districtCards[pos].image_Color.color = card.GetColor;
+    }
+
+    public void RemoveDistrict(Card card)
     {
 
     }
@@ -139,6 +163,7 @@ public class GameGUIHandler : MonoBehaviour
     public void HideTakeAnAction()
     {
         ActionSelection.SetActive(false);
+        ShowTurnButtons();
         //gameManager.SendTurnToNextCharacter();
     }
 
@@ -165,5 +190,20 @@ public class GameGUIHandler : MonoBehaviour
         Card c = gameManager.deck.RemoveTopCard();
         gameManager.myPlayer.PlayerHand.AddCard(c);
         cardSelection.SetActive(false);
+    }
+
+    public void ShowTurnButtons()
+    {
+        turnSelection.SetActive(true);
+    }
+
+    public void SetSelectedCard(CardVisual c)
+    {
+        if (selectedCard != null)
+        {
+            selectedCard.bg.color = selectedCard.baseColor;
+        }
+        selectedCard = c;
+        selectedCard.bg.color = Color.white;
     }
 }

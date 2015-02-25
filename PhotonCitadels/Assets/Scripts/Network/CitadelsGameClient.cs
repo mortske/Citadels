@@ -83,6 +83,10 @@ public class CitadelsGameClient : LoadBalancingClient
                 content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
                 RunEventCode(photonEvent.Code, content);
                 break;
+            case (byte)11:
+                content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
+                RunEventCode(photonEvent.Code, content);
+                break;
             //    case (byte)0:
             //      Hashtable content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
             //      RunEventCode(photonEvent.Code, content);
@@ -131,6 +135,10 @@ public class CitadelsGameClient : LoadBalancingClient
             case (byte)10: //set character to remote player
                 player = gameManager.GetRemotePlayer((int)data[(byte)1]);
                 player.character = (CharacterCard)((int)data[(byte)2]);
+                break;
+            case (byte)11: //add card from hand to district
+                player = gameManager.GetRemotePlayer((int)data[(byte)1]);
+                player.BuiltDistricts.AddCard(player.PlayerHand.RemoveCardWithID((int)data[(byte)2]));
                 break;
         }
     }

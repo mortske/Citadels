@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
         {
             if (curGameState == GameState.PlayerTurns)
             {
-                gameGUI.ShowTakeAnAction();
+                myPlayer.TakePlayerTurn();
             }
             else if (IAmKing && curGameState == GameState.CharacterSelection)
             {

@@ -8,11 +8,18 @@ public class Character : MonoBehaviour
     public int myID;
     public bool isLocal { get; set; }
     Hand hand;
+    CardCollection builtDistricts;
     public Hand PlayerHand
     {
         get { return hand; }
         set { hand = value; }
     }
+    public CardCollection BuiltDistricts
+    {
+        get { return builtDistricts; }
+        set { builtDistricts = value; }
+    }
+
     public int coins;
     public CharacterCard character;
 
@@ -20,6 +27,8 @@ public class Character : MonoBehaviour
     {
         hand = GetComponent<Hand>();
         hand.Collection = new List<Card>();
+        builtDistricts = GetComponents<CardCollection>()[1];
+        builtDistricts.collection = new List<Card>();
         character = CharacterCard.Nothing;
         coins = 2;
         isLocal = true;
@@ -41,6 +50,34 @@ public class Character : MonoBehaviour
         table[(byte)1] = myID;
         table[(byte)2] = character;
         GameManager.instance.gameClient.SendEvent(10, table, true, false);
+    }
+
+    public void TakePlayerTurn()
+    {
+        GameManager.instance.gameGUI.ShowTakeAnAction();
+    }
+
+    public void BuildDistrict()
+    {
+        CardVisual selectedCard = GameManager.instance.gameGUI.selectedCard;
+        if (selectedCard != null)
+        {
+            if (coins >= selectedCard.card.cost)
+            {
+                AdjustCoins(-selectedCard.card.cost);
+                Card c = hand.RemoveCardWithID(selectedCard.card.id);
+                GameManager.instance.gameGUI.RemoveCard(c);
+                builtDistricts.AddCard(c);
+                GameManager.instance.gameGUI.RecalculateCardPositions();
+                GameManager.instance.gameGUI.AddDistrict(c, builtDistricts.collection.Count - 1);
+                GameManager.instance.gameGUI.turnButtons[0].interactable = false;
+
+                Hashtable table = new Hashtable();
+                table[(byte)1] = myID;
+                table[(byte)2] = c.id;
+                GameManager.instance.gameClient.SendEvent(11, table, true, false);
+            }
+        }
     }
 
     public void UseCharacterAbility()
@@ -76,7 +113,7 @@ public class Character : MonoBehaviour
         int coins = 0;
         foreach (Card c in hand.collection)
         {
-            if (c.color == CardColor.Blue)
+            if (c.color == color)
             {
                 coins++;
             }
