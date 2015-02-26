@@ -102,17 +102,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (gameClient.GameStarted)
-        {
-            for (int i = 0; i < myPlayer.PlayerHand.Collection.Count; i++)
-            {
-                GUI.Label(new Rect(200, 20 * i, 100, 30), myPlayer.PlayerHand.Collection[i].id + ". " + myPlayer.PlayerHand.Collection[i].name);
-            }
-        }
-    }
-
     public void SendOverTurn()
     {
         if (turnID == gameClient.CurrentRoom.PlayerCount)
@@ -133,14 +122,20 @@ public class GameManager : MonoBehaviour
 
         if (IsMyTurn)
         {
-            if (curGameState == GameState.PlayerTurns)
+            if (curGameState == GameState.PlayerTurns && IAmKing && myPlayer.hasTakenTurn)
+            {
+                myPlayer.hasTakenTurn = false;
+                SetUpCharactersInGame(3);
+                gameGUI.ShowCharacterSelection(charsInGame.ToArray());
+                //TODO: check that turn actually works
+            }
+            else if (curGameState == GameState.PlayerTurns)
             {
                 myPlayer.TakePlayerTurn();
             }
             else if (IAmKing && curGameState == GameState.CharacterSelection)
             {
-                curGameState = GameState.PlayerTurns;
-                this.gameClient.SendEvent(7, null, true, false);
+                SetGameState(GameState.PlayerTurns);
 
                 int firstPlayerID = GetFirstPlayer();
                 SetTurn(firstPlayerID);
@@ -157,11 +152,72 @@ public class GameManager : MonoBehaviour
 
     public void SendTurnToNextCharacter()
     {
+        myPlayer.hasTakenTurn = true;
         int nextPlayerID = GetNextPlayer();
-        SetTurn(nextPlayerID);
+        if (nextPlayerID != 0)
+        {
+            SetTurn(nextPlayerID);
+            Hashtable table = new Hashtable();
+            table[(byte)1] = turnID;
+            this.gameClient.SendEvent(5, table, true, RaiseEventOptions.Default, false);
+        }
+        else
+        {
+            SendTurnToKing();
+        }
+    }
+
+    public void SendTurnToKing()
+    {
+        SetGameState(GameState.CharacterSelection);
+        myPlayer.Reset();
+        gameClient.SendEvent(12, null, true, false);
+
+        SetTurn(KingID);
         Hashtable table = new Hashtable();
         table[(byte)1] = turnID;
-        this.gameClient.SendEvent(5, table, true, RaiseEventOptions.Default, false);
+        this.gameClient.SendEvent(5, table, true, false);
+
+        //SetUpCharactersInGame(3);
+        //gameGUI.ShowCharacterSelection(charsInGame.ToArray());
+    }
+
+    void StartNewRound(int kingID)
+    {
+        turnID = kingID;
+        gameGUI.SetTurnText();
+
+        if (IsMyTurn)
+        {
+            SetUpCharactersInGame(3);
+            gameGUI.ShowCharacterSelection(charsInGame.ToArray());
+            //if (curGameState == GameState.PlayerTurns)
+            //{
+            //    myPlayer.TakePlayerTurn();
+            //}
+            //else if (IAmKing && curGameState == GameState.CharacterSelection)
+            //{
+            //    SetGameState(GameState.PlayerTurns);
+
+            //    int firstPlayerID = GetFirstPlayer();
+            //    SetTurn(firstPlayerID);
+            //    Hashtable table = new Hashtable();
+            //    table[(byte)1] = turnID;
+            //    this.gameClient.SendEvent(5, table, true, RaiseEventOptions.Default, false);
+            //}
+            //else
+            //{
+            //    gameGUI.ShowCharacterSelection(charsInGame.ToArray());
+            //}
+        }
+    }
+
+    public void SetGameState(GameState state)
+    {
+        curGameState = state;
+        Hashtable table = new Hashtable();
+        table[(byte)1] = (int)GameState.PlayerTurns;
+        this.gameClient.SendEvent(7, table, true, false);
     }
 
     public int GetFirstPlayer()

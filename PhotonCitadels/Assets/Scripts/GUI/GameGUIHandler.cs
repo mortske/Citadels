@@ -164,7 +164,6 @@ public class GameGUIHandler : MonoBehaviour
     {
         ActionSelection.SetActive(false);
         ShowTurnButtons();
-        //gameManager.SendTurnToNextCharacter();
     }
 
     public void ShowCardSelection()
@@ -187,7 +186,7 @@ public class GameGUIHandler : MonoBehaviour
 
     public void SelectCard(int i)
     {
-        Card c = gameManager.deck.RemoveTopCard();
+        Card c = gameManager.deck.RemoveCardAt(i);
         gameManager.myPlayer.PlayerHand.AddCard(c);
         cardSelection.SetActive(false);
     }

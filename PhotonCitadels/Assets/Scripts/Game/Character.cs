@@ -9,6 +9,8 @@ public class Character : MonoBehaviour
     public bool isLocal { get; set; }
     Hand hand;
     CardCollection builtDistricts;
+    public bool hasTakenTurn = false;
+
     public Hand PlayerHand
     {
         get { return hand; }
@@ -32,6 +34,12 @@ public class Character : MonoBehaviour
         character = CharacterCard.Nothing;
         coins = 2;
         isLocal = true;
+    }
+
+    public void Reset()
+    {
+        SetCharacter(9);
+        hasTakenTurn = false;
     }
 
     public void AdjustCoins(int amnt)

@@ -69,7 +69,8 @@ public class CitadelsGameClient : LoadBalancingClient
                 RunEventCode(photonEvent.Code, content);
                 break;
             case (byte)7:
-                RunEventCode(photonEvent.Code, null);
+                content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
+                RunEventCode(photonEvent.Code, content);
                 break;
             case (byte)8:
                 content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
@@ -86,6 +87,9 @@ public class CitadelsGameClient : LoadBalancingClient
             case (byte)11:
                 content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
                 RunEventCode(photonEvent.Code, content);
+                break;
+            case (byte)12:
+                RunEventCode(photonEvent.Code, null);
                 break;
             //    case (byte)0:
             //      Hashtable content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
@@ -121,8 +125,8 @@ public class CitadelsGameClient : LoadBalancingClient
             case (byte)6: //set character list
                 gameManager.SetCharactersInGame((int[])data[(byte)1]);
                 break;
-            case (byte)7: //set to playerturns GameMode
-                gameManager.curGameState = GameState.PlayerTurns;
+            case (byte)7: //set GameMode
+                gameManager.curGameState = (GameState)((int)data[(byte)1]);
                 break;
             case (byte)8: //add card to remote players hand
                 player = gameManager.GetRemotePlayer((int)data[(byte)1]);
@@ -139,6 +143,9 @@ public class CitadelsGameClient : LoadBalancingClient
             case (byte)11: //add card from hand to district
                 player = gameManager.GetRemotePlayer((int)data[(byte)1]);
                 player.BuiltDistricts.AddCard(player.PlayerHand.RemoveCardWithID((int)data[(byte)2]));
+                break;
+            case (byte)12: //reset Game
+                gameManager.myPlayer.Reset();
                 break;
         }
     }
