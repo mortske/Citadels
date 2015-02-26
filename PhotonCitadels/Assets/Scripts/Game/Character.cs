@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
@@ -67,10 +68,9 @@ public class Character : MonoBehaviour
         if (!murdered)
         {
             if (character == CharacterCard.Assassin)
-            {
-                int[] tmp = { 1, 2, 3, 4, 5, 6, 7, 8 };
-                GameManager.instance.gameGUI.ShowCharacterSelection(tmp, "Pick a character to murder!");
-            }
+                GameManager.instance.gameGUI.ShowCharacterSelection(FindSelectableCharacters(), "Pick a character to murder!");
+            else if(character == CharacterCard.Thief)
+                GameManager.instance.gameGUI.ShowCharacterSelection(FindSelectableCharacters(), "Pick a character to steal from!");
             else
                 GameManager.instance.gameGUI.ShowTakeAnAction();
         }
@@ -78,6 +78,34 @@ public class Character : MonoBehaviour
         {
             GameManager.instance.SendTurnToNextCharacter();
         }
+    }
+
+    int[] FindSelectableCharacters()
+    {
+        List<int> tmp = new List<int>();
+        for (int i = 0; i < Enum.GetValues(typeof(CharacterCard)).Length - 1; i++)
+        {
+            bool cont = false;
+            if (i == 0)
+                cont = true;
+
+            if (i == (int)character)
+                cont = true;
+            
+            for (int j = 0; j < GameManager.instance.removedChars.Count; j++)
+            {
+                if (i == GameManager.instance.removedChars[j])
+                    cont = true;
+            }
+            for (int j = 0; j < GameManager.instance.remotePlayers.Length; j++)
+                if (GameManager.instance.remotePlayers[j].murdered)
+                    if(i == (int)GameManager.instance.remotePlayers[j].character)
+                        cont = true;
+            if (cont)
+                continue;
+            tmp.Add(i);
+        }
+        return tmp.ToArray();
     }
 
     public void SelectedVictim(int character)

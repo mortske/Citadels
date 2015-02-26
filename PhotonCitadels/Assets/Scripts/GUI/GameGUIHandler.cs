@@ -154,6 +154,7 @@ public class GameGUIHandler : MonoBehaviour
 
             Hashtable table = new Hashtable();
             table[(byte)1] = gameManager.charsInGame.ToArray();
+            table[(byte)2] = gameManager.removedChars.ToArray();
             gameManager.gameClient.SendEvent(6, table, true, false);
 
             gameManager.SendOverTurn();

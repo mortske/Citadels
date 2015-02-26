@@ -127,7 +127,7 @@ public class CitadelsGameClient : LoadBalancingClient
                 gameManager.SetTurn((int)data[(byte)1]);
                 break;
             case (byte)6: //set character list
-                gameManager.SetCharactersInGame((int[])data[(byte)1]);
+                gameManager.SetCharactersInGame((int[])data[(byte)1], (int[])data[(byte)2]);
                 break;
             case (byte)7: //set GameMode
                 gameManager.curGameState = (GameState)((int)data[(byte)1]);
@@ -154,6 +154,8 @@ public class CitadelsGameClient : LoadBalancingClient
             case (byte)13: //murder character
                 if ((int)data[(byte)1] == gameManager.myPlayer.myID)
                     gameManager.myPlayer.Murder();
+                else
+                    gameManager.GetRemotePlayer((int)data[(byte)1]).murdered = true;
                 break;
         }
     }

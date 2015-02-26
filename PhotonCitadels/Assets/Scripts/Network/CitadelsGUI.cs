@@ -146,7 +146,7 @@ public class CitadelsGUI : MonoBehaviour
         //request all players to add cards to their hands
         this.gameClient.SendEvent(4, null, true, RaiseEventOptions.Default, true);
 
-        gameManager.SetUpCharactersInGame(0);
+        gameManager.SetUpCharactersInGame(3);
         gameManager.gameGUI.ShowCharacterSelection(gameManager.charsInGame.ToArray(), "Pick a character");
     }
 }

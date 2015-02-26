@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     public int turnID;
     public GameState curGameState;
     public List<int> charsInGame;
+    public List<int> removedChars;
     
 
     public bool IsMyTurn
@@ -168,7 +169,7 @@ public class GameManager : MonoBehaviour
 
         if (IsMyTurn)
         {
-            SetUpCharactersInGame(0);
+            SetUpCharactersInGame(3);
             gameGUI.ShowCharacterSelection(charsInGame.ToArray(), "Pick a character");
         }
         myPlayer.Reset();
@@ -216,6 +217,7 @@ public class GameManager : MonoBehaviour
     public void SetUpCharactersInGame(int amountToRemove)
     {
         charsInGame = new List<int>();
+        removedChars = new List<int>();
 
         foreach (CharacterCard item in Enum.GetValues(typeof(CharacterCard)))
         {
@@ -225,17 +227,20 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < amountToRemove; i++)
         {
             int charPos = UnityEngine.Random.Range(0, charsInGame.Count - 1);
+            removedChars.Add(charPos);
             charsInGame.RemoveAt(charPos);
         }
+        removedChars.RemoveAt(0);
     }
     public void RemoveCharacterFromSelection(int character)
     {
         charsInGame.Remove(character);
     }
 
-    public void SetCharactersInGame(int[] characters)
+    public void SetCharactersInGame(int[] characters, int[] removedCharacters)
     {
         charsInGame = characters.ToList();
+        removedChars = removedCharacters.ToList();
     }
 }
 
