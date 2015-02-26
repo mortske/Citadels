@@ -21,6 +21,7 @@ public class GameGUIHandler : MonoBehaviour
     public Text text_turn;
     public Text text_coinAmnt;
     public Text text_curChar;
+    public Text text_characterSelection;
     public Button[] characterButtons;
     public Button[] cardsSelections;
     public Button[] turnButtons;
@@ -132,9 +133,10 @@ public class GameGUIHandler : MonoBehaviour
         }
     }
 
-    public void ShowCharacterSelection(int[] characters)
+    public void ShowCharacterSelection(int[] characters, string titleText)
     {
         characterSelectionUI.SetActive(true);
+        text_characterSelection.text = titleText;
 
         for (int i = 0; i < characterButtons.Length; i++)
             characterButtons[i].interactable = false;
@@ -144,15 +146,23 @@ public class GameGUIHandler : MonoBehaviour
     }
     public void SetCharacterSelection(int character)
     {
-        gameManager.myPlayer.SetCharacter(character);
-        characterSelectionUI.SetActive(false);
-        gameManager.RemoveCharacterFromSelection(character);
+        if (gameManager.curGameState == GameState.CharacterSelection)
+        {
+            gameManager.myPlayer.SetCharacter(character);
+            characterSelectionUI.SetActive(false);
+            gameManager.RemoveCharacterFromSelection(character);
 
-        Hashtable table = new Hashtable();
-        table[(byte)1] = gameManager.charsInGame.ToArray();
-        gameManager.gameClient.SendEvent(6, table, true, false);
+            Hashtable table = new Hashtable();
+            table[(byte)1] = gameManager.charsInGame.ToArray();
+            gameManager.gameClient.SendEvent(6, table, true, false);
 
-        gameManager.SendOverTurn();
+            gameManager.SendOverTurn();
+        }
+        else
+        {
+            gameManager.myPlayer.SelectedVictim(character);
+            characterSelectionUI.SetActive(false);
+        }
     }
 
     public void ShowTakeAnAction()

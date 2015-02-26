@@ -10,6 +10,7 @@ public class Character : MonoBehaviour
     Hand hand;
     CardCollection builtDistricts;
     public bool hasTakenTurn = false;
+    public bool murdered = false;
 
     public Hand PlayerHand
     {
@@ -40,6 +41,7 @@ public class Character : MonoBehaviour
     {
         SetCharacter(9);
         hasTakenTurn = false;
+        murdered = false;
     }
 
     public void AdjustCoins(int amnt)
@@ -62,7 +64,40 @@ public class Character : MonoBehaviour
 
     public void TakePlayerTurn()
     {
+        if (!murdered)
+        {
+            if (character == CharacterCard.Assassin)
+            {
+                int[] tmp = { 1, 2, 3, 4, 5, 6, 7, 8 };
+                GameManager.instance.gameGUI.ShowCharacterSelection(tmp, "Pick a character to murder!");
+            }
+            else
+                GameManager.instance.gameGUI.ShowTakeAnAction();
+        }
+        else
+        {
+            GameManager.instance.SendTurnToNextCharacter();
+        }
+    }
+
+    public void SelectedVictim(int character)
+    {
+        foreach (Character remotePlayer in GameManager.instance.remotePlayers)
+        {
+            if (remotePlayer.character == (CharacterCard)character)
+            {
+                Hashtable table = new Hashtable();
+                table[(byte)1] = remotePlayer.myID;
+                GameManager.instance.gameClient.SendEvent(13, table, true, false);
+            }
+        }
+
         GameManager.instance.gameGUI.ShowTakeAnAction();
+    }
+
+    public void Murder()
+    {
+        murdered = true;
     }
 
     public void BuildDistrict()

@@ -122,14 +122,7 @@ public class GameManager : MonoBehaviour
 
         if (IsMyTurn)
         {
-            if (curGameState == GameState.PlayerTurns && IAmKing && myPlayer.hasTakenTurn)
-            {
-                myPlayer.hasTakenTurn = false;
-                SetUpCharactersInGame(3);
-                gameGUI.ShowCharacterSelection(charsInGame.ToArray());
-                //TODO: check that turn actually works
-            }
-            else if (curGameState == GameState.PlayerTurns)
+            if (curGameState == GameState.PlayerTurns)
             {
                 myPlayer.TakePlayerTurn();
             }
@@ -145,7 +138,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                gameGUI.ShowCharacterSelection(charsInGame.ToArray());
+                gameGUI.ShowCharacterSelection(charsInGame.ToArray(), "Pick a character");
             }
         }
     }
@@ -163,53 +156,22 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            SendTurnToKing();
+            gameClient.SendEvent(12, null, true, true);
         }
     }
 
-    public void SendTurnToKing()
-    {
-        SetGameState(GameState.CharacterSelection);
-        myPlayer.Reset();
-        gameClient.SendEvent(12, null, true, false);
-
-        SetTurn(KingID);
-        Hashtable table = new Hashtable();
-        table[(byte)1] = turnID;
-        this.gameClient.SendEvent(5, table, true, false);
-
-        //SetUpCharactersInGame(3);
-        //gameGUI.ShowCharacterSelection(charsInGame.ToArray());
-    }
-
-    void StartNewRound(int kingID)
+    public void StartNewRound(int kingID)
     {
         turnID = kingID;
         gameGUI.SetTurnText();
+        curGameState = GameState.CharacterSelection;
 
         if (IsMyTurn)
         {
-            SetUpCharactersInGame(3);
-            gameGUI.ShowCharacterSelection(charsInGame.ToArray());
-            //if (curGameState == GameState.PlayerTurns)
-            //{
-            //    myPlayer.TakePlayerTurn();
-            //}
-            //else if (IAmKing && curGameState == GameState.CharacterSelection)
-            //{
-            //    SetGameState(GameState.PlayerTurns);
-
-            //    int firstPlayerID = GetFirstPlayer();
-            //    SetTurn(firstPlayerID);
-            //    Hashtable table = new Hashtable();
-            //    table[(byte)1] = turnID;
-            //    this.gameClient.SendEvent(5, table, true, RaiseEventOptions.Default, false);
-            //}
-            //else
-            //{
-            //    gameGUI.ShowCharacterSelection(charsInGame.ToArray());
-            //}
+            SetUpCharactersInGame(0);
+            gameGUI.ShowCharacterSelection(charsInGame.ToArray(), "Pick a character");
         }
+        myPlayer.Reset();
     }
 
     public void SetGameState(GameState state)

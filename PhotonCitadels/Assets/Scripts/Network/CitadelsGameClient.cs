@@ -91,6 +91,10 @@ public class CitadelsGameClient : LoadBalancingClient
             case (byte)12:
                 RunEventCode(photonEvent.Code, null);
                 break;
+            case (byte)13:
+                content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
+                RunEventCode(photonEvent.Code, content);
+                break;
             //    case (byte)0:
             //      Hashtable content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
             //      RunEventCode(photonEvent.Code, content);
@@ -144,8 +148,12 @@ public class CitadelsGameClient : LoadBalancingClient
                 player = gameManager.GetRemotePlayer((int)data[(byte)1]);
                 player.BuiltDistricts.AddCard(player.PlayerHand.RemoveCardWithID((int)data[(byte)2]));
                 break;
-            case (byte)12: //reset Game
-                gameManager.myPlayer.Reset();
+            case (byte)12: //start new round
+                gameManager.StartNewRound(gameManager.KingID);
+                break;
+            case (byte)13: //murder character
+                if ((int)data[(byte)1] == gameManager.myPlayer.myID)
+                    gameManager.myPlayer.Murder();
                 break;
         }
     }
