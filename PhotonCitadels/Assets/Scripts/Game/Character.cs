@@ -12,6 +12,7 @@ public class Character : MonoBehaviour
     CardCollection builtDistricts;
     public bool hasTakenTurn = false;
     public bool murdered = false;
+    public int stolenFrom = -1;
 
     public Hand PlayerHand
     {
@@ -43,6 +44,7 @@ public class Character : MonoBehaviour
         SetCharacter(9);
         hasTakenTurn = false;
         murdered = false;
+        stolenFrom = -1;
     }
 
     public void AdjustCoins(int amnt)
@@ -67,6 +69,14 @@ public class Character : MonoBehaviour
     {
         if (!murdered)
         {
+            if (stolenFrom != -1)
+            {
+                Hashtable table = new Hashtable();
+                table[(byte)1] = stolenFrom;
+                table[(byte)2] = coins;
+                GameManager.instance.gameClient.SendEvent(15, table, true, false);
+                AdjustCoins(-coins);
+            }
             if (character == CharacterCard.Assassin)
                 GameManager.instance.gameGUI.ShowCharacterSelection(FindSelectableCharacters(), "Pick a character to murder!");
             else if(character == CharacterCard.Thief)
@@ -110,13 +120,29 @@ public class Character : MonoBehaviour
 
     public void SelectedVictim(int character)
     {
-        foreach (Character remotePlayer in GameManager.instance.remotePlayers)
+        if (this.character == CharacterCard.Assassin)
         {
-            if (remotePlayer.character == (CharacterCard)character)
+            foreach (Character remotePlayer in GameManager.instance.remotePlayers)
             {
-                Hashtable table = new Hashtable();
-                table[(byte)1] = remotePlayer.myID;
-                GameManager.instance.gameClient.SendEvent(13, table, true, false);
+                if (remotePlayer.character == (CharacterCard)character)
+                {
+                    Hashtable table = new Hashtable();
+                    table[(byte)1] = remotePlayer.myID;
+                    GameManager.instance.gameClient.SendEvent(13, table, true, false);
+                }
+            }
+        }
+        else if (this.character == CharacterCard.Thief)
+        {
+            foreach (Character remotePlayer in GameManager.instance.remotePlayers)
+            {
+                if (remotePlayer.character == (CharacterCard)character)
+                {
+                    Hashtable table = new Hashtable();
+                    table[(byte)1] = remotePlayer.myID;
+                    table[(byte)2] = myID;
+                    GameManager.instance.gameClient.SendEvent(14, table, true, false);
+                }
             }
         }
 
@@ -126,6 +152,11 @@ public class Character : MonoBehaviour
     public void Murder()
     {
         murdered = true;
+    }
+
+    public void StealFrom(int playerID)
+    {
+        stolenFrom = playerID;
     }
 
     public void BuildDistrict()
@@ -157,7 +188,7 @@ public class Character : MonoBehaviour
         switch (character)
         {
             case CharacterCard.Magician:
-                //TODO: implement mage
+                GameManager.instance.gameGUI.ShowMagicianSelection();
                 break;
             case CharacterCard.King:
                 AddCoinsForCardColors(CardColor.Gold);
@@ -176,6 +207,25 @@ public class Character : MonoBehaviour
                 break;
             case CharacterCard.Queen:
                 break;
+        }
+    }
+
+    public void TakeNewHand(int player)
+    {
+        if (player == -1)
+        {
+            int cards = hand.collection.Count;
+            for (int i = 0; i < cards; i++)
+            {
+                Card c = hand.RemoveCardAt(0);
+                GameManager.instance.discard.AddCard(c);
+                GameManager.instance.gameGUI.RemoveCard(c);
+            }
+            for (int i = 0; i < cards; i++)
+            {
+                Card c = GameManager.instance.deck.RemoveTopCard();
+                hand.AddCard(c);
+            }
         }
     }
 

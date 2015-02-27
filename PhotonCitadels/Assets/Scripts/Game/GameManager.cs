@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     public Character[] remotePlayers;
 
     public Deck deck { get; set; }
+    public Deck discard { get; set; }
     public Character myPlayer;
 
     public int KingID;
@@ -58,7 +59,8 @@ public class GameManager : MonoBehaviour
         citadelsGUI = GetComponent<CitadelsGUI>();
         gameClient = citadelsGUI.gameClient;
 
-        deck = GetComponent<Deck>();
+        deck = GetComponents<Deck>()[0];
+        discard = GetComponents<Deck>()[1];
         myPlayer.Initialize();
         KingID = 1;
         turnID = KingID;
@@ -226,7 +228,8 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < amountToRemove; i++)
         {
-            int charPos = UnityEngine.Random.Range(0, charsInGame.Count - 1);
+            int charPos = i + 3;
+            //int charPos = UnityEngine.Random.Range(0, charsInGame.Count - 1);
             removedChars.Add(charPos);
             charsInGame.RemoveAt(charPos);
         }

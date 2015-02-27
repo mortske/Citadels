@@ -95,6 +95,18 @@ public class CitadelsGameClient : LoadBalancingClient
                 content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
                 RunEventCode(photonEvent.Code, content);
                 break;
+            case (byte)14:
+                content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
+                RunEventCode(photonEvent.Code, content);
+                break;
+            case (byte)15:
+                content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
+                RunEventCode(photonEvent.Code, content);
+                break;
+            case (byte)16:
+                content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
+                RunEventCode(photonEvent.Code, content);
+                break;
             //    case (byte)0:
             //      Hashtable content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
             //      RunEventCode(photonEvent.Code, content);
@@ -156,6 +168,17 @@ public class CitadelsGameClient : LoadBalancingClient
                     gameManager.myPlayer.Murder();
                 else
                     gameManager.GetRemotePlayer((int)data[(byte)1]).murdered = true;
+                break;
+            case (byte)14: //steal from character
+                if ((int)data[(byte)1] == gameManager.myPlayer.myID)
+                    gameManager.myPlayer.StealFrom((int)data[(byte)2]);
+                break;
+            case (byte)15: //send money to player
+                if ((int)data[(byte)1] == gameManager.myPlayer.myID)
+                    gameManager.myPlayer.AdjustCoins((int)data[(byte)2]);
+                break;
+            case (byte)16: //add card from remote player to discard
+                //TODO: implement
                 break;
         }
     }

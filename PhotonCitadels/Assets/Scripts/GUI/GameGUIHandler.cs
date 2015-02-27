@@ -16,6 +16,7 @@ public class GameGUIHandler : MonoBehaviour
     public GameObject ActionSelection;
     public GameObject cardSelection;
     public GameObject turnSelection;
+    public GameObject mageSelection;
     public Text text_deckAmnt;
     public Text text_king;
     public Text text_turn;
@@ -215,5 +216,10 @@ public class GameGUIHandler : MonoBehaviour
         }
         selectedCard = c;
         selectedCard.bg.color = Color.white;
+    }
+
+    public void ShowMagicianSelection()
+    {
+        mageSelection.SetActive(true);
     }
 }
