@@ -107,16 +107,21 @@ public class CitadelsGameClient : LoadBalancingClient
                 content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
                 RunEventCode(photonEvent.Code, content);
                 break;
-            //    case (byte)0:
-            //      Hashtable content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
-            //      RunEventCode(photonEvent.Code, content);
-            //      break;
+            case (byte)17:
+                content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
+                RunEventCode(photonEvent.Code, content);
+                break;
+            case (byte)18:
+                content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
+                RunEventCode(photonEvent.Code, content);
+                break;
         }
     }
 
     public void RunEventCode(byte code, Hashtable data)
     {
         Character player;
+        Card c;
         switch (code)
         {
             case (byte)1: //start game
@@ -131,7 +136,7 @@ public class CitadelsGameClient : LoadBalancingClient
             case (byte)4: //add startercards to hand
                 for (int i = 0; i < 4; i++)
                 {
-                    Card c = gameManager.deck.RemoveTopCard();
+                    c = gameManager.deck.RemoveTopCard();
                     gameManager.myPlayer.PlayerHand.AddCard(c);
                 }
                 break;
@@ -178,7 +183,20 @@ public class CitadelsGameClient : LoadBalancingClient
                     gameManager.myPlayer.AdjustCoins((int)data[(byte)2]);
                 break;
             case (byte)16: //add card from remote player to discard
-                //TODO: implement
+                player = gameManager.GetRemotePlayer((int)data[(byte)1]);
+                c = player.PlayerHand.RemoveCardAt(0);
+                GameManager.instance.discard.AddCard(c);
+                break;
+            case (byte)17: //switch hands with players
+                int first = (int)data[(byte)1];
+                int other = (int)data[(byte)2];
+                if (other == gameManager.myPlayer.myID)
+                    gameManager.myPlayer.SwitchHandsWith(first);
+                else
+                    gameManager.GetRemotePlayer(other).SwitchHandsWith(first);
+                break;
+            case (byte)18: //set king id
+                gameManager.SetKingID((int)data[(byte)1]);
                 break;
         }
     }

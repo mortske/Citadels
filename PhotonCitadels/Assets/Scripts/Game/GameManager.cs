@@ -38,6 +38,26 @@ public class GameManager : MonoBehaviour
         get { return KingID == gameClient.LocalPlayer.ID; }
     }
 
+    public int NextID
+    {
+        get{
+            int myID = myPlayer.myID;
+            if (myID == gameClient.CurrentRoom.PlayerCount)
+                return 1;
+            return myID + 1;
+        }
+    }
+    public int PrevID
+    {
+        get
+        {
+            int myID = myPlayer.myID;
+            if (myID == 1)
+                return gameClient.CurrentRoom.PlayerCount;
+            return myID - 1;
+        }
+    }
+
     public Character GetRemotePlayer(int id)
     {
         for (int i = 0; i < remotePlayers.Length; i++)
@@ -103,6 +123,12 @@ public class GameManager : MonoBehaviour
                 i++;
             }
         }
+    }
+
+    public void SetKingID(int kingID)
+    {
+        this.KingID = kingID;
+        gameGUI.SetKingText();
     }
 
     public void SendOverTurn()
@@ -228,7 +254,7 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < amountToRemove; i++)
         {
-            int charPos = i + 3;
+            int charPos = i + 1;
             //int charPos = UnityEngine.Random.Range(0, charsInGame.Count - 1);
             removedChars.Add(charPos);
             charsInGame.RemoveAt(charPos);

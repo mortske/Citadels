@@ -17,6 +17,7 @@ public class GameGUIHandler : MonoBehaviour
     public GameObject cardSelection;
     public GameObject turnSelection;
     public GameObject mageSelection;
+    public GameObject playerSelection;
     public Text text_deckAmnt;
     public Text text_king;
     public Text text_turn;
@@ -24,6 +25,8 @@ public class GameGUIHandler : MonoBehaviour
     public Text text_curChar;
     public Text text_characterSelection;
     public Button[] characterButtons;
+    public Button[] playerButtons;
+    public Text[] playerButtons_text;
     public Button[] cardsSelections;
     public Button[] turnButtons;
     public GameObject cardPrefab;
@@ -83,6 +86,19 @@ public class GameGUIHandler : MonoBehaviour
             RectTransform cardtransform = allCards[i].GetComponent<RectTransform>();
             RectTransform rtransform = CardsUI.GetComponentsInChildren<RectTransform>()[1];
             allCards[i].transform.localPosition = new Vector3(rtransform.localPosition.x - (i * (cardtransform.rect.width)), rtransform.localPosition.y);
+        }
+    }
+
+    public void UpdateHandVisuals()
+    {
+        foreach (CardVisual visual in allCards)
+        {
+            Destroy(visual.gameObject);
+        }
+        allCards = new List<CardVisual>();
+        foreach (Card card in gameManager.myPlayer.PlayerHand.collection)
+        {
+            AddCard(card);
         }
     }
 
@@ -165,6 +181,33 @@ public class GameGUIHandler : MonoBehaviour
             gameManager.myPlayer.SelectedVictim(character);
             characterSelectionUI.SetActive(false);
         }
+    }
+
+    public void ShowPlayerSelection()
+    {
+        playerSelection.SetActive(true);
+        for (int i = 0; i < playerButtons.Length; i++)
+        {
+            playerButtons[i].interactable = false;
+            if (i == gameManager.myPlayer.myID - 1)
+                continue;
+            if (i >= gameManager.gameClient.CurrentRoom.PlayerCount)
+                break;
+            int cardlength = gameManager.GetRemotePlayer(i + 1).PlayerHand.collection.Count;
+            playerButtons_text[i].text = "Player" + (i + 1) + " | " + cardlength + " Cards";
+            playerButtons[i].interactable = true;
+        }
+    }
+
+    public void HandlePlayerSelection(int character)
+    {
+        if (gameManager.myPlayer.character == CharacterCard.Magician)
+        {
+            gameManager.myPlayer.TakeNewHand(character);
+            mageSelection.SetActive(false);
+            turnButtons[1].interactable = false;
+        }
+        playerSelection.SetActive(false);
     }
 
     public void ShowTakeAnAction()
