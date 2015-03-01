@@ -51,6 +51,7 @@
      <Compile Include="Assets\Scripts\Deck\Deck.cs" />
      <Compile Include="Assets\Scripts\Deck\Hand.cs" />
      <Compile Include="Assets\Scripts\GUI\CardVisual.cs" />
+     <Compile Include="Assets\Scripts\GUI\DistrictsSelection.cs" />
      <Compile Include="Assets\Scripts\GUI\GameGUIHandler.cs" />
      <Compile Include="Assets\Scripts\Game\Character.cs" />
      <Compile Include="Assets\Scripts\Game\GameManager.cs" />

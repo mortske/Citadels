@@ -115,6 +115,10 @@ public class CitadelsGameClient : LoadBalancingClient
                 content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
                 RunEventCode(photonEvent.Code, content);
                 break;
+            case (byte)19:
+                content = photonEvent.Parameters[ParameterCode.CustomEventContent] as Hashtable;
+                RunEventCode(photonEvent.Code, content);
+                break;
         }
     }
 
@@ -197,6 +201,13 @@ public class CitadelsGameClient : LoadBalancingClient
                 break;
             case (byte)18: //set king id
                 gameManager.SetKingID((int)data[(byte)1]);
+                break;
+            case (byte)19: //move card from district to discard
+                if ((int)data[(byte)1] == gameManager.myPlayer.myID)
+                    player = gameManager.myPlayer;
+                else
+                    player = gameManager.GetRemotePlayer((int)data[(byte)1]);
+                player.DestroyMyDistrict((int)data[(byte)2]);
                 break;
         }
     }

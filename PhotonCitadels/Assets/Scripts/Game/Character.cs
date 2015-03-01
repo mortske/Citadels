@@ -100,6 +100,9 @@ public class Character : MonoBehaviour
             }
             if (character == CharacterCard.Queen)
             {
+                //TODO: Change to king character and not marker
+                //TODO: Change to get coins after turn is over if king was murdered
+                //TODO: make queen available only if 5 or more players
                 gameManager.gameGUI.turnButtons[1].interactable = false;
                 int kingID = gameManager.KingID;
                 if (kingID == gameManager.PrevID || kingID == gameManager.NextID)
@@ -228,6 +231,7 @@ public class Character : MonoBehaviour
         {
             case CharacterCard.Magician:
                 gameManager.gameGUI.ShowMagicianSelection();
+                //TODO: change "new hand" to specific amount of cards
                 break;
             case CharacterCard.King:
                 AddCoinsForCardColors(CardColor.Gold);
@@ -242,8 +246,8 @@ public class Character : MonoBehaviour
                 gameManager.gameGUI.turnButtons[1].interactable = false;
                 break;
             case CharacterCard.Warlord:
-                //TODO: implement wololo
-                AddCoinsForCardColors(CardColor.Red);
+                gameManager.gameGUI.ShowWarlordSelection();
+                
                 break;
         }
     }
@@ -307,7 +311,13 @@ public class Character : MonoBehaviour
         }
     }
 
-    void AddCoinsForCardColors(CardColor color)
+    public void AddWarlordCoins()
+    {
+        AddCoinsForCardColors(CardColor.Red);
+        gameManager.gameGUI.warlordSelection.SetActive(false);
+    }
+
+    public void AddCoinsForCardColors(CardColor color)
     {
         int coins = 0;
         foreach (Card c in builtDistricts.collection)
@@ -318,6 +328,25 @@ public class Character : MonoBehaviour
             }
         }
         AdjustCoins(coins);
+    }
+
+    public void DestroyOthersDistrict(Character player, Card card)
+    {
+        AdjustCoins(-(card.cost - 1));
+        gameManager.discard.AddCard(gameManager.GetRemotePlayer(player.myID).builtDistricts.RemoveCardWithID(card.id));
+        Hashtable table = new Hashtable();
+        table[(byte)1] = player.myID;
+        table[(byte)2] = card.id;
+        gameManager.gameClient.SendEvent(19, table, true, false);
+    }
+    public void DestroyMyDistrict(int cardID)
+    {
+        Card card = builtDistricts.RemoveCardWithID(cardID);
+        if (isLocal)
+        {
+            gameManager.gameGUI.RemoveDistrict(card);
+        }
+        gameManager.discard.AddCard(card);
     }
 }
 

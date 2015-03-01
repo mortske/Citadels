@@ -17,6 +17,7 @@ public class GameGUIHandler : MonoBehaviour
     public GameObject cardSelection;
     public GameObject turnSelection;
     public GameObject mageSelection;
+    public GameObject warlordSelection;
     public GameObject playerSelection;
     public Text text_deckAmnt;
     public Text text_king;
@@ -31,6 +32,7 @@ public class GameGUIHandler : MonoBehaviour
     public Button[] turnButtons;
     public GameObject cardPrefab;
     public CardVisual[] districtCards;
+    public DistrictsSelection districtSelection;
 
     List<CardVisual> allCards;
     public CardVisual selectedCard { get; private set; }
@@ -38,6 +40,17 @@ public class GameGUIHandler : MonoBehaviour
     void Start()
     {
         allCards = new List<CardVisual>();
+    }
+
+    public void Reset()
+    {
+        turnButtons[0].interactable = true;
+        turnButtons[1].interactable = true;
+        Button[] warlordButtons = warlordSelection.GetComponentsInChildren<Button>();
+        foreach (Button b in warlordButtons)
+        {
+            b.interactable = true;
+        }
     }
 
     void Update()
@@ -124,7 +137,39 @@ public class GameGUIHandler : MonoBehaviour
 
     public void RemoveDistrict(Card card)
     {
+        for (int i = 0; i < districtCards.Length; i++)
+        {
+            if (districtCards[i].card.id == card.id)
+            {
+                districtCards[i].card = null;
+                districtCards[i].text_Name.text = "";
+                districtCards[i].text_Cost.text = "";
+                districtCards[i].image_Color.color = Color.white;
+                break;
+            }
+        }
+        RecalculateDistrictPositions();
+    }
 
+    void ResetDistricts()
+    {
+        for (int i = 0; i < districtCards.Length; i++)
+        {
+            districtCards[i].card = null;
+            districtCards[i].text_Name.text = "";
+            districtCards[i].text_Cost.text = "";
+            districtCards[i].image_Color.color = Color.white;
+        }
+    }
+
+    void RecalculateDistrictPositions()
+    {
+        ResetDistricts();
+        int districtAmnt = gameManager.myPlayer.BuiltDistricts.collection.Count;
+        for (int i = 0; i < districtAmnt; i++)
+        {
+            AddDistrict(gameManager.myPlayer.BuiltDistricts.collection[i], i);
+        }
     }
 
     public void SetKingText()
@@ -264,5 +309,17 @@ public class GameGUIHandler : MonoBehaviour
     public void ShowMagicianSelection()
     {
         mageSelection.SetActive(true);
+    }
+
+    public void ShowWarlordSelection()
+    {
+        warlordSelection.SetActive(true);
+    }
+
+    public void ShowDistrictsSelection()
+    {
+        districtSelection.gameObject.SetActive(true);
+        districtSelection.Reset();
+        districtSelection.SetSelectableButtons();
     }
 }

@@ -201,6 +201,7 @@ public class GameManager : MonoBehaviour
             gameGUI.ShowCharacterSelection(charsInGame.ToArray(), "Pick a character");
         }
         myPlayer.Reset();
+        gameGUI.Reset();
     }
 
     public void SetGameState(GameState state)
