@@ -39,10 +39,10 @@
 	<Reference Include="System.Core" />
 	<Reference Include="System.Xml.Linq" />
 	<Reference Include="UnityEngine">
-	  <HintPath>D:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
 	</Reference>
 	<Reference Include="UnityEditor">
-	  <HintPath>D:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
@@ -50,11 +50,14 @@
      <Compile Include="Assets\Scripts\Deck\CardCollection.cs" />
      <Compile Include="Assets\Scripts\Deck\Deck.cs" />
      <Compile Include="Assets\Scripts\Deck\Hand.cs" />
+     <Compile Include="Assets\Scripts\Endscreen\PlayerVisual.cs" />
+     <Compile Include="Assets\Scripts\Endscreen\PlayerVisualManager.cs" />
      <Compile Include="Assets\Scripts\GUI\CardVisual.cs" />
      <Compile Include="Assets\Scripts\GUI\DistrictsSelection.cs" />
      <Compile Include="Assets\Scripts\GUI\GameGUIHandler.cs" />
      <Compile Include="Assets\Scripts\Game\Character.cs" />
      <Compile Include="Assets\Scripts\Game\GameManager.cs" />
+     <Compile Include="Assets\Scripts\Game\PlayerScore.cs" />
      <Compile Include="Assets\Scripts\Network\CitadelsGUI.cs" />
      <Compile Include="Assets\Scripts\Network\CitadelsGameClient.cs" />
      <Compile Include="Assets\Scripts\Util\NumericUpDown.cs" />
@@ -76,10 +79,10 @@
      <None Include="Assets\demo-loadbalancing-unity\Assets\Lib\Photon3Unity3D.xml" />
      <None Include="Assets\Plugins\Android\AndroidManifestAmazon.xml" />
  <Reference Include="UnityEngine.UI">
- <HintPath>D:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="Photon3Unity3D">
- <HintPath>D:/TortoiseGit/Citadels/PhotonCitadels/Assets/Plugins/Photon3Unity3D.dll</HintPath>
+ <HintPath>D:/TortoiseGit/CItadels/PhotonCitadels/Assets/Plugins/Photon3Unity3D.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

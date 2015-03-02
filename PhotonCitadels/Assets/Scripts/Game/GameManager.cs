@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public GameGUIHandler gameGUI;
     public GameObject PlayerPrefab;
     public Character[] remotePlayers;
+    public PlayerScore playerScore;
 
     public Deck deck { get; set; }
     public Deck discard { get; set; }
@@ -38,23 +39,42 @@ public class GameManager : MonoBehaviour
         get { return KingID == gameClient.LocalPlayer.ID; }
     }
 
-    public int NextID
+    public Character NextIDPlayer
     {
         get{
             int myID = myPlayer.myID;
             if (myID == gameClient.CurrentRoom.PlayerCount)
-                return 1;
-            return myID + 1;
+                return GetRemotePlayer(1);
+            return GetRemotePlayer(myID + 1);
         }
     }
-    public int PrevID
+    public Character PrevIDPlayer
     {
         get
         {
             int myID = myPlayer.myID;
             if (myID == 1)
-                return gameClient.CurrentRoom.PlayerCount;
-            return myID - 1;
+                return GetRemotePlayer(gameClient.CurrentRoom.PlayerCount);
+            return GetRemotePlayer(myID - 1);
+        }
+    }
+
+    public bool SomeOneHasWon
+    {
+        get
+        {
+            if (myPlayer.PlayerHand.collection.Count > 7)
+            {
+                return true;
+            }
+            for (int i = 0; i < remotePlayers.Length; i++)
+            {
+                if (remotePlayers[i].BuiltDistricts.collection.Count > 7)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -174,6 +194,7 @@ public class GameManager : MonoBehaviour
 
     public void SendTurnToNextCharacter()
     {
+        myPlayer.FinishTurn();
         myPlayer.hasTakenTurn = true;
         int nextPlayerID = GetNextPlayer();
         if (nextPlayerID != 0)
@@ -191,17 +212,26 @@ public class GameManager : MonoBehaviour
 
     public void StartNewRound(int kingID)
     {
-        turnID = kingID;
-        gameGUI.SetTurnText();
-        curGameState = GameState.CharacterSelection;
-
-        if (IsMyTurn)
+        if (!SomeOneHasWon)
         {
-            SetUpCharactersInGame(3);
-            gameGUI.ShowCharacterSelection(charsInGame.ToArray(), "Pick a character");
+            turnID = kingID;
+            gameGUI.SetTurnText();
+            curGameState = GameState.CharacterSelection;
+
+            if (IsMyTurn)
+            {
+                SetUpCharactersInGame(3);
+                gameGUI.ShowCharacterSelection(charsInGame.ToArray(), "Pick a character");
+            }
+            myPlayer.Reset();
+            gameGUI.Reset();
         }
-        myPlayer.Reset();
-        gameGUI.Reset();
+        else
+        {
+            //TODO: did not load this
+            CalculatePlayersScore();
+            Application.LoadLevel(Application.loadedLevel + 1);
+        }
     }
 
     public void SetGameState(GameState state)
@@ -255,8 +285,8 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < amountToRemove; i++)
         {
-            int charPos = i + 1;
-            //int charPos = UnityEngine.Random.Range(0, charsInGame.Count - 1);
+            //int charPos = i + 1;
+            int charPos = UnityEngine.Random.Range(0, charsInGame.Count - 1);
             removedChars.Add(charPos);
             charsInGame.RemoveAt(charPos);
         }
@@ -271,6 +301,50 @@ public class GameManager : MonoBehaviour
     {
         charsInGame = characters.ToList();
         removedChars = removedCharacters.ToList();
+    }
+
+    public void CalculatePlayersScore()
+    {
+        List<string> players = new List<string>();
+        List<int> scores = new List<int>();
+
+        for (int i = -1; i < remotePlayers.Length; i++)
+        {
+            int score = 0;
+            Character player = myPlayer;
+            if (i != -1)
+                player = remotePlayers[i];
+            for (int j = 0; j < player.BuiltDistricts.collection.Count; j++)
+            {
+                score += player.BuiltDistricts.GetCardAt(i).cost;
+            }
+            if (player.BuiltDistricts.collection.Count > 7)
+            {
+                //TODO: add 3 points to first player
+                score += 2;
+            }
+            if (CheckForAllColors(player))
+                score += 3;
+            players.Add(player.gameObject.name);
+            scores.Add(score);
+        }
+
+        playerScore.SetScores(players.ToArray(), scores.ToArray());
+    }
+
+    public bool CheckForAllColors(Character player)
+    {
+        bool[] colors = new bool[Enum.GetValues(typeof(CardColor)).Length];
+        for (int i = 0; i < player.PlayerHand.collection.Count; i++)
+        {
+            colors[(int)player.PlayerHand.GetCardAt(i).color] = true;
+        }
+        bool alldone = false;
+        for (int i = 0; i < colors.Length; i++)
+        {
+            alldone = colors[i];
+        }
+        return alldone;
     }
 }
 

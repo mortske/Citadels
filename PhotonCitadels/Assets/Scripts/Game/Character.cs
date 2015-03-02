@@ -100,15 +100,13 @@ public class Character : MonoBehaviour
             }
             if (character == CharacterCard.Queen)
             {
-                //TODO: Change to king character and not marker
-                //TODO: Change to get coins after turn is over if king was murdered
                 //TODO: make queen available only if 5 or more players
                 gameManager.gameGUI.turnButtons[1].interactable = false;
                 int kingID = gameManager.KingID;
-                if (kingID == gameManager.PrevID || kingID == gameManager.NextID)
-                {
+                if (gameManager.PrevIDPlayer.character == CharacterCard.King && !gameManager.PrevIDPlayer.murdered)
                     AdjustCoins(3);
-                }
+                if (gameManager.NextIDPlayer.character == CharacterCard.King && !gameManager.NextIDPlayer.murdered)
+                    AdjustCoins(3);
             }
 
             if (character == CharacterCard.Assassin)
@@ -204,6 +202,8 @@ public class Character : MonoBehaviour
         CardVisual selectedCard = gameManager.gameGUI.selectedCard;
         if (selectedCard != null)
         {
+            //TODO: make sure district is not already built
+            //TODO: check build district bug, kept card after building district
             if (coins >= selectedCard.card.cost)
             {
                 districtstoBuild--;
@@ -257,7 +257,6 @@ public class Character : MonoBehaviour
         Hashtable table = new Hashtable();
         if (player == -1)
         {
-            
             int cards = hand.collection.Count;
             for (int i = 0; i < cards; i++)
             {
@@ -347,6 +346,17 @@ public class Character : MonoBehaviour
             gameManager.gameGUI.RemoveDistrict(card);
         }
         gameManager.discard.AddCard(card);
+    }
+
+    public void FinishTurn()
+    {
+        if (character == CharacterCard.Queen)
+        {
+            if (gameManager.PrevIDPlayer.character == CharacterCard.King && gameManager.PrevIDPlayer.murdered)
+                AdjustCoins(3);
+            if (gameManager.NextIDPlayer.character == CharacterCard.King && gameManager.NextIDPlayer.murdered)
+                AdjustCoins(3);
+        }
     }
 }
 

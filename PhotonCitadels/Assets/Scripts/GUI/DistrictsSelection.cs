@@ -39,14 +39,24 @@ public class DistrictsSelection : MonoBehaviour
             playerButtons[i].interactable = false;
             if (i >= GameManager.instance.gameClient.CurrentRoom.PlayerCount)
                 break;
-            int cardlength = GameManager.instance.GetRemotePlayer(i + 1).PlayerHand.collection.Count;
+
+            int cardlength = 0;
+            if (i == GameManager.instance.myPlayer.myID - 1)
+                cardlength = GameManager.instance.myPlayer.PlayerHand.collection.Count;
+            else
+                cardlength = GameManager.instance.GetRemotePlayer(i + 1).PlayerHand.collection.Count;
+
             playerButtons[i].interactable = true;
         }
     }
 
     public void SetDistrictsTo(int player)
     {
-        curRemotePlayer = GameManager.instance.GetRemotePlayer(player);
+        Reset();
+        if (player == GameManager.instance.myPlayer.myID)
+            curRemotePlayer = GameManager.instance.myPlayer;
+        else
+            curRemotePlayer = GameManager.instance.GetRemotePlayer(player);
         for (int i = 0; i < curRemotePlayer.BuiltDistricts.collection.Count; i++)
         {
             Card card = curRemotePlayer.BuiltDistricts.GetCardAt(i);
