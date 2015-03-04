@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            if (myPlayer.PlayerHand.collection.Count > 7)
+            if (myPlayer.BuiltDistricts.collection.Count > 7)
             {
                 return true;
             }
@@ -123,6 +123,7 @@ public class GameManager : MonoBehaviour
         gameGUI.SetTurnText();
 
         myPlayer.myID = gameClient.LocalPlayer.ID;
+        myPlayer.name = "Player";
     }
 
     void SetupRemotePlayers()
@@ -140,6 +141,7 @@ public class GameManager : MonoBehaviour
                 remotePlayers[i].Initialize();
                 remotePlayers[i].isLocal = false;
                 remotePlayers[i].myID = p.Key;
+                remotePlayers[i].name = newPlayer.name;
                 i++;
             }
         }
@@ -228,7 +230,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            //TODO: did not load this
             CalculatePlayersScore();
             Application.LoadLevel(Application.loadedLevel + 1);
         }
@@ -305,7 +306,7 @@ public class GameManager : MonoBehaviour
 
     public void CalculatePlayersScore()
     {
-        List<string> players = new List<string>();
+        List<Character> players = new List<Character>();
         List<int> scores = new List<int>();
 
         for (int i = -1; i < remotePlayers.Length; i++)
@@ -316,7 +317,7 @@ public class GameManager : MonoBehaviour
                 player = remotePlayers[i];
             for (int j = 0; j < player.BuiltDistricts.collection.Count; j++)
             {
-                score += player.BuiltDistricts.GetCardAt(i).cost;
+                score += player.BuiltDistricts.GetCardAt(j).cost;
             }
             if (player.BuiltDistricts.collection.Count > 7)
             {
@@ -325,7 +326,7 @@ public class GameManager : MonoBehaviour
             }
             if (CheckForAllColors(player))
                 score += 3;
-            players.Add(player.gameObject.name);
+            players.Add(player);
             scores.Add(score);
         }
 

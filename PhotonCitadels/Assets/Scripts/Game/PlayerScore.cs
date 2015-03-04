@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PlayerScore : MonoBehaviour 
 {
-    public string[] players;
+    public Character[] players;
     public int[] score;
 
     void Start()
@@ -11,7 +11,7 @@ public class PlayerScore : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void SetScores(string[] characters, int[] scores)
+    public void SetScores(Character[] characters, int[] scores)
     {
         players = characters;
         score = scores;

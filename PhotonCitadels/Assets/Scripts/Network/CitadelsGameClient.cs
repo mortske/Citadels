@@ -138,7 +138,7 @@ public class CitadelsGameClient : LoadBalancingClient
                 gameManager.deck.DestroyCardWithID((int)data[(byte)1]);
                 break;
             case (byte)4: //add startercards to hand
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     c = gameManager.deck.RemoveTopCard();
                     gameManager.myPlayer.PlayerHand.AddCard(c);
