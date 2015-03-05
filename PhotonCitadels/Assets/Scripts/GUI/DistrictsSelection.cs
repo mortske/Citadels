@@ -29,7 +29,7 @@ public class DistrictsSelection : MonoBehaviour
         mainCard.text_Cost.text = "";
         mainCard.image_Color.color = Color.white;
         mainCard.card = null;
-        coinsText.text = "Coins: " + GameManager.instance.myPlayer.coins;
+        coinsText.text = GameManager.instance.myPlayer.coins.ToString();
     }
 
     public void SetSelectableButtons()

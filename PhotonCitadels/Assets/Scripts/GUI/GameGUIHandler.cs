@@ -19,8 +19,7 @@ public class GameGUIHandler : MonoBehaviour
     public GameObject mageSelection;
     public GameObject warlordSelection;
     public GameObject playerSelection;
-    public Text text_deckAmnt;
-    public Text text_king;
+    public Image image_Cross;
     public Text text_turn;
     public Text text_coinAmnt;
     public Text text_curChar;
@@ -62,9 +61,8 @@ public class GameGUIHandler : MonoBehaviour
             if (!PlayerUI.enabled)
                 PlayerUI.enabled = true;
 
-            text_deckAmnt.text = "Cards in deck: " + gameManager.deck.Collection.Count;
-            text_coinAmnt.text = "Coins: " + gameManager.myPlayer.coins;
-            text_curChar.text = "Current Character: " + gameManager.myPlayer.character;
+            text_coinAmnt.text = gameManager.myPlayer.coins.ToString();
+            text_curChar.text = "Character: " + gameManager.myPlayer.character;
         }
         else
         {
@@ -176,11 +174,11 @@ public class GameGUIHandler : MonoBehaviour
     {
         if (gameManager.gameClient.LocalPlayer.ID == gameManager.KingID)
         {
-            text_king.text = "You are the king!";
+            image_Cross.enabled = false;
         }
         else
         {
-            text_king.text = "You are not the king..";
+             image_Cross.enabled = true;
         }
     }
     public void SetTurnText()
@@ -191,7 +189,7 @@ public class GameGUIHandler : MonoBehaviour
         }
         else
         {
-            text_turn.text = "It's not your turn yet..";
+            text_turn.text = "It's " + gameManager.GetRemotePlayer(gameManager.turnID).name + "'s turn!";
         }
     }
 

@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
         gameGUI.SetTurnText();
 
         myPlayer.myID = gameClient.LocalPlayer.ID;
-        myPlayer.name = "Player";
+        myPlayer.name = gameClient.LocalPlayer.Name;
     }
 
     void SetupRemotePlayers()
@@ -136,7 +136,7 @@ public class GameManager : MonoBehaviour
             if (p.Key != gameClient.LocalPlayer.ID)
             {
                 GameObject newPlayer = (GameObject)Instantiate(PlayerPrefab);
-                newPlayer.name = "Player" + p.Key;
+                newPlayer.name = p.Value.Name;
                 remotePlayers[i] = newPlayer.GetComponent<Character>();
                 remotePlayers[i].Initialize();
                 remotePlayers[i].isLocal = false;

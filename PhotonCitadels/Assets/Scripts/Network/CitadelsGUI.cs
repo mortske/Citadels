@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using ExitGames.Client.Photon.LoadBalancing;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -11,6 +12,7 @@ public class CitadelsGUI : MonoBehaviour
     public string AppId;
     public CitadelsGameClient gameClient { get; set; }
     GameManager gameManager;
+    public InputField nameField;
 
     int maxPlayers = 1;
     string roomName = "";
@@ -35,6 +37,8 @@ public class CitadelsGUI : MonoBehaviour
         this.gameClient.citadelsGUI = this;
         this.gameClient.gameManager = gameManager;
         this.gameClient.Connect();
+
+        nameField.text = PlayerPrefs.GetString("PlayerName", "");
     }
 
     void Update()
@@ -48,6 +52,12 @@ public class CitadelsGUI : MonoBehaviour
 
         LoadBalancingPeer lbPeer = this.gameClient.loadBalancingPeer;
         lbPeer.StopThread();   // for the Editor it's better stop any connection immediately
+    }
+
+    public void SetPlayerName(Text playerText)
+    {
+        gameClient.LocalPlayer.Name = playerText.text;
+        PlayerPrefs.SetString("PlayerName", playerText.text);
     }
 
     void OnGUI()
@@ -68,44 +78,51 @@ public class CitadelsGUI : MonoBehaviour
 
     private void OnGUILobby()
     {
-        GUILayout.Label("Lobby Screen");
-        GUILayout.Label(string.Format("Players in rooms: {0} looking for rooms: {1}  rooms: {2}", this.gameClient.PlayersInRoomsCount, this.gameClient.PlayersOnMasterCount, this.gameClient.RoomsCount));
-
-        #region CreateRoomGUI
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("-", GUILayout.Width(20), GUILayout.Height(20)))
+        if (gameClient.LocalPlayer.Name != "unityPlayer")
         {
-            maxPlayers--;
-            if (maxPlayers < 2)
-                maxPlayers = 2;
-        }
-        GUILayout.Label(maxPlayers.ToString(), GUILayout.Width(10));
-        if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.Height(20)))
-        {
-            maxPlayers++;
-            if (maxPlayers > 6)
-                maxPlayers = 6;
-        }
-        GUILayout.EndHorizontal();
+            GUILayout.Label("Lobby Screen");
+            GUILayout.Label(string.Format("Players in rooms: {0} looking for rooms: {1}  rooms: {2}", this.gameClient.PlayersInRoomsCount, this.gameClient.PlayersOnMasterCount, this.gameClient.RoomsCount));
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Room name: ", GUILayout.Width(80));
-        roomName = GUILayout.TextArea(roomName);
-        GUILayout.EndHorizontal();
-        #endregion
-
-        if (GUILayout.Button("Create", GUILayout.Width(150)))
-        {
-            this.gameClient.OpCreateRoom(roomName, new RoomOptions() { MaxPlayers = (byte)this.maxPlayers }, TypedLobby.Default);
-            Debug.Log("creating room");
-        }
-
-        GUILayout.Label("Rooms to choose from: " + this.gameClient.RoomInfoList.Count);
-        foreach (RoomInfo roomInfo in this.gameClient.RoomInfoList.Values)
-        {
-            if (GUILayout.Button(roomInfo.Name))
+            #region CreateRoomGUI
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("-", GUILayout.Width(20), GUILayout.Height(20)))
             {
-                this.gameClient.OpJoinRoom(roomInfo.Name);
+                maxPlayers--;
+                if (maxPlayers < 2)
+                    maxPlayers = 2;
+            }
+            GUILayout.Label(maxPlayers.ToString(), GUILayout.Width(10));
+            if (GUILayout.Button("+", GUILayout.Width(20), GUILayout.Height(20)))
+            {
+                maxPlayers++;
+                if (maxPlayers > 6)
+                    maxPlayers = 6;
+            }
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Room name: ", GUILayout.Width(80));
+            roomName = GUILayout.TextArea(roomName);
+            GUILayout.EndHorizontal();
+            #endregion
+
+            if (GUILayout.Button("Create", GUILayout.Width(150)))
+            {
+                this.gameClient.OpCreateRoom(roomName, new RoomOptions() { MaxPlayers = (byte)this.maxPlayers }, TypedLobby.Default);
+                Debug.Log("creating room");
+            }
+
+            GUILayout.Label("Rooms to choose from: " + this.gameClient.RoomInfoList.Count);
+            foreach (RoomInfo roomInfo in this.gameClient.RoomInfoList.Values)
+            {
+                string playerCount = "*Full*";
+                if (roomInfo.PlayerCount < roomInfo.MaxPlayers)
+                    playerCount = roomInfo.PlayerCount + "/" + roomInfo.MaxPlayers;
+                string roomname = roomInfo.Name + " " + playerCount;
+                if (GUILayout.Button(roomname))
+                {
+                    this.gameClient.OpJoinRoom(roomInfo.Name);
+                }
             }
         }
     }

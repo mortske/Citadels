@@ -39,12 +39,12 @@ public class Character : MonoBehaviour
         builtDistricts = GetComponents<CardCollection>()[1];
         builtDistricts.collection = new List<Card>();
         character = CharacterCard.Nothing;
-        coins = 200;
+        coins = 2;
         isLocal = true;
         hasTakenTurn = false;
         murdered = false;
         stolenFrom = -1;
-        districtstoBuild = 10;
+        districtstoBuild = 1;
     }
 
     public void Reset()
@@ -53,7 +53,7 @@ public class Character : MonoBehaviour
         hasTakenTurn = false;
         murdered = false;
         stolenFrom = -1;
-        districtstoBuild = 10;
+        districtstoBuild = 1;
     }
 
     public void AdjustCoins(int amnt)
