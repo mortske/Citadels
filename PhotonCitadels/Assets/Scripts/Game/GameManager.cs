@@ -168,6 +168,9 @@ public class GameManager : MonoBehaviour
     }
     public void SetTurn(int id)
     {
+        if (curGameState == GameState.PlayerTurns && id != myPlayer.myID)
+            GetRemotePlayer(id).hasStartedTurn = true;
+
         turnID = id;
         gameGUI.SetTurnText();
 
@@ -175,6 +178,7 @@ public class GameManager : MonoBehaviour
         {
             if (curGameState == GameState.PlayerTurns)
             {
+                myPlayer.hasStartedTurn = true;
                 myPlayer.TakePlayerTurn();
             }
             else if (IAmKing && curGameState == GameState.CharacterSelection)
@@ -286,7 +290,6 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < amountToRemove; i++)
         {
-            //int charPos = i + 1;
             int charPos = UnityEngine.Random.Range(0, charsInGame.Count - 1);
             removedChars.Add(charPos);
             charsInGame.RemoveAt(charPos);
@@ -321,7 +324,7 @@ public class GameManager : MonoBehaviour
             }
             if (player.BuiltDistricts.collection.Count > 7)
             {
-                //TODO: add 3 points to first player
+                //TODO: add 4 points to first player to build 8 districts
                 score += 2;
             }
             if (CheckForAllColors(player))

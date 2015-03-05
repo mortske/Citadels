@@ -1,6 +1,5 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="DemoPlayer.cs" company="">
-// TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
 using ExitGames.Client.Photon;

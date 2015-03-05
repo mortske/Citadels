@@ -13,6 +13,7 @@ public class Character : MonoBehaviour
     Hand hand;
     CardCollection builtDistricts;
     public bool hasTakenTurn { get; set; }
+    public bool hasStartedTurn { get; set; }
     public bool murdered { get; set; }
     public int stolenFrom { get; set; }
     public int districtstoBuild { get; set; }
@@ -50,6 +51,7 @@ public class Character : MonoBehaviour
     public void Reset()
     {
         SetCharacter(9);
+        hasTakenTurn = false;
         hasTakenTurn = false;
         murdered = false;
         stolenFrom = -1;

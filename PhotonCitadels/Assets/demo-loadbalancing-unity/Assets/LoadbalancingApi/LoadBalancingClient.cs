@@ -689,7 +689,6 @@ namespace ExitGames.Client.Photon.LoadBalancing
                 return true;
             }
 
-            // TODO: handle error "cant connect to GS"
             return false;
         }
 
@@ -1449,7 +1448,6 @@ namespace ExitGames.Client.Photon.LoadBalancing
                             this.DebugReturn(DebugLevel.INFO, "Most likely the game became empty during the switch to GameServer.");
                         }
 
-                        // TODO: add callback to join failed
                         break;
                 }
 
@@ -1478,7 +1476,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
                     Player target = this.CurrentRoom.GetPlayer(userId);
                     if (target == null)
                     {
-                        Debug.WriteLine("Created player that was missing so far (no property set).");//TODO: decide if this could ever happen. it means the user had no props at all.
+                        Debug.WriteLine("Created player that was missing so far (no property set).");
                         this.CurrentRoom.StorePlayer(this.CreatePlayer(string.Empty, userId, false, null));
                     }
                 }
@@ -1486,11 +1484,9 @@ namespace ExitGames.Client.Photon.LoadBalancing
             switch (operationResponse.OperationCode)
             {
                 case OperationCode.CreateGame:
-                    // TODO: add callback "game created"
                     break;
                 case OperationCode.JoinGame:
                 case OperationCode.JoinRandomGame:
-                    // TODO: add callback "game joined"
                     break;
             }
         }
@@ -1680,12 +1676,10 @@ namespace ExitGames.Client.Photon.LoadBalancing
                             if (operationResponse.ReturnCode == ErrorCode.NoRandomMatchFound)
                             {
                                 // this happens only for JoinRandomRoom
-                                // TODO: implement callback/reaction when no random game could be found (this is no bug and can simply happen if no games are open)
-                                this.state = ClientState.JoinedLobby; // TODO: maybe we have to return to another state here (if we didn't join a lobby)
+                                this.state = ClientState.JoinedLobby;
                                 break;
                             }
 
-                            // TODO: handle more error cases
 
                             if (operationResponse.ReturnCode != 0)
                             {
@@ -1694,7 +1688,7 @@ namespace ExitGames.Client.Photon.LoadBalancing
                                     this.DebugReturn(DebugLevel.ERROR, string.Format("Getting into game failed, client stays on masterserver: {0}.", operationResponse.ToStringFull()));
                                 }
 
-                                this.state = ClientState.JoinedLobby; // TODO: maybe we have to return to another state here (if we didn't join a lobby)
+                                this.state = ClientState.JoinedLobby; 
                                 break;
                             }
 

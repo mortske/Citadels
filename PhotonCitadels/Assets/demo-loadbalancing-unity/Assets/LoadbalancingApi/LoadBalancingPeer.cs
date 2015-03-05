@@ -224,7 +224,6 @@ namespace ExitGames.Client.Photon.LoadBalancing
             if (createIfNotExists)
             {
                 op[ParameterCode.JoinMode] = (byte)JoinMode.CreateIfNotExists;
-                // TODO: Add lobby here
             }
             if (actorId != 0)
             {
